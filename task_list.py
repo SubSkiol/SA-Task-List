@@ -1,15 +1,33 @@
 ﻿"""Load, save, and manage tasks inside of a task list.
 This base should be used for both CLI and GUI varients of the Task List."""
-# import json
+import json
 
 task_list = dict() # Create an empty dictionary that we can add to later
 
+# Start json section 
 def load_json():
-    """Load existing Task Lists""" 
+    """Load data from the JSON file."""
 
-def save_json():
-    """Save current istance of task list. 
-    This should print the list then ask for confirmation before overwriting the json."""
+    try:
+        with open("list_data.json", "r", encoding="utf-8") as json_file:
+            data = json.load(json_file)
+        return data
+    except FileNotFoundError:
+        print("No existing data file found.")
+        return None
+
+def save_json(data):
+    """Save current instance of the task list. 
+    This should print the list then ask for confirmation before overwriting the JSON."""
+
+    print(data, "Are you sure you wish to save? This will overwrite the file.")
+    save_confirmation = input("Enter Y to agree: ").lower()
+
+    if save_confirmation == "y":
+        with open("list_data.json", "w", encoding="utf-8") as json_file:
+            json.dump(data, json_file, indent=2)
+
+
 
 def add_to_list():
     """Handle instances of adding to the task list"""
