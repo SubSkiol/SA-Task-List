@@ -29,7 +29,7 @@ def save_json(data):
 
 
 
-def add_to_list():
+def add_to_list(t_list):
     """Handle instances of adding to the task list"""
 
 def remove_from_list():
