@@ -28,12 +28,54 @@ def save_json(data):
             json.dump(data, json_file, indent=2)
 
 
-
 def add_to_list(t_list):
     """Handle instances of adding to the task list"""
 
-def remove_from_list():
+    add_loop = True
+    while add_loop:
+        print("Enter a unique name (key) for your task",
+              "Warning: If the key already exists, data will be overwritten.")
+        user_key = input()
+        print(f"Task name is '{user_key}'")
+
+        user_value = input("Type the task\n")
+
+        try:
+            t_list[user_key] = user_value
+            print(f"Added task!",
+                  {t_list[user_key]})
+            add_loop = False
+        except ValueError as e:
+            print(f"Value error: {e}")
+        except SyntaxError as e:
+            print(f"Syntax error: {e}")
+        except KeyError as e:
+            print(f"Key error: {e}")
+        except Exception:
+            print(f"Unknown error. Details: {e}")
+    return t_list
+
+def remove_from_list(t_list):
     """Handle instances of the user removing from the list"""
+
+    removal_loop = True
+    while removal_loop:
+        print(t_list, "Enter the key of the item would you like to remove.",
+            "Enter Q to end")
+
+        removal_input = input()
+        try:
+            del t_list[removal_input]
+        except ValueError as e:
+            print(f"Value error: {e}")
+        except SyntaxError as e:
+            print(f"Syntax error: {e}")
+        except KeyError as e:
+            print(f"Key error: {e}")
+        except Exception:
+            print(f"Unknown error. Details: {e}")
+
+        return t_list    
 
 def cli():
     """The Commandline Instance of the Task List"""
