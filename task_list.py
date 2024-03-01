@@ -2,7 +2,7 @@
 This base should be used for both CLI and GUI varients of the Task List."""
 import json
 
-task_list = dict() # Create an empty dictionary that we can add to later
+
 
 # Start json section 
 def load_json():
@@ -14,7 +14,7 @@ def load_json():
         return data
     except FileNotFoundError:
         print("No existing data file found.")
-        return None
+        return dict()
 
 def save_json(data):
     """Save current instance of the task list. 
@@ -35,7 +35,10 @@ def add_to_list(t_list):
     while add_loop:
         print("Enter a unique name (key) for your task",
               "Warning: If the key already exists, data will be overwritten.")
-        user_key = input()
+        user_key = input("Press Q to quit")
+        if user_key.lower() == "q":
+            add_loop = False
+
         print(f"Task name is '{user_key}'")
 
         user_value = input("Type the task\n")
@@ -51,7 +54,7 @@ def add_to_list(t_list):
             print(f"Syntax error: {e}")
         except KeyError as e:
             print(f"Key error: {e}")
-        except Exception:
+        except Exception as e:
             print(f"Unknown error. Details: {e}")
     return t_list
 
@@ -64,25 +67,55 @@ def remove_from_list(t_list):
             "Enter Q to end")
 
         removal_input = input()
-        try:
-            del t_list[removal_input]
-        except ValueError as e:
-            print(f"Value error: {e}")
-        except SyntaxError as e:
-            print(f"Syntax error: {e}")
-        except KeyError as e:
-            print(f"Key error: {e}")
-        except Exception:
-            print(f"Unknown error. Details: {e}")
 
-        return t_list    
+        if removal_input.lower() == "q":
+            removal_loop = False
+        else:
+            try:
+                del t_list[removal_input]
+                return t_list
+            except ValueError as e:
+                print(f"Value error: {e}")
+            except SyntaxError as e:
+                print(f"Syntax error: {e}")
+            except KeyError as e:
+                print(f"Key error: {e}")
+            except Exception:
+                print(f"Unknown error. Details: {e}")  
 
-def cli():
+def cli(task_list):
     """The Commandline Instance of the Task List"""
+
+    cli_loop = True
+    print("Test Version")
+
+    while cli_loop:
+        print("Select an operation to do to the task list")
+        cli_choice = input("(V)iew | (A)dd | (R)emove | (S)ave | (L)oad | (Q)uit\n")
+
+        if cli_choice.lower() == "v":
+            print(task_list)
+        elif cli_choice.lower() == "a":
+            task_list = add_to_list(task_list)
+        elif cli_choice.lower() == "r":
+            task_list = remove_from_list(task_list)
+        elif cli_choice.lower() == "s":
+            save_json(task_list)
+        elif cli_choice.lower() == "l":
+            task_list = load_json()
+        elif cli_choice.lower() == "q":
+            cli_loop = False
+        else:
+            print(f"'{cli_choice}' is not a valid input")
+        
 
 def main():
     """Handle the Selection of GUI or CLI. 
     This shuld currently only open CLI, as GUI does not exist"""
+    
+    task_list = load_json()
+    cli(task_list) # TODO Once CLI, make this choose based on user settings. 
+
 
 if __name__ == "__main__":
     main()
