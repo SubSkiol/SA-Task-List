@@ -112,7 +112,7 @@ def cli(task_list):
 def main():
     """Handle the Selection of GUI or CLI. 
     This shuld currently only open CLI, as GUI does not exist"""
-    
+
     task_list = load_json()
     cli(task_list) # TODO Once CLI, make this choose based on user settings. 
 
