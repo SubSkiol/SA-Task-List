@@ -2,8 +2,6 @@
 This base should be used for both CLI and GUI varients of the Task List."""
 import json
 
-
-
 # Start json section 
 def load_json():
     """Load data from the JSON file."""
@@ -11,6 +9,7 @@ def load_json():
     try:
         with open("list_data.json", "r", encoding="utf-8") as json_file:
             data = json.load(json_file)
+            print("Loaded Data")
         return data
     except FileNotFoundError:
         print("No existing data file found.")
@@ -21,13 +20,15 @@ def save_json(data):
     This should print the list then ask for confirmation before overwriting the JSON."""
 
     print(data, "Are you sure you wish to save? This will overwrite the file.")
-    save_confirmation = input("Enter Y to agree: ").lower()
+    save_confirmation = input("Y/n\n").lower()
 
-    if save_confirmation == "y":
+    if save_confirmation == "y" or "":
         with open("list_data.json", "w", encoding="utf-8") as json_file:
             json.dump(data, json_file, indent=2)
+        print("Saved Data")
 
 
+# Start List management section
 def add_to_list(t_list):
     """Handle instances of adding to the task list"""
 
@@ -35,36 +36,33 @@ def add_to_list(t_list):
     while add_loop:
         print("Enter a unique name (key) for your task",
               "Warning: If the key already exists, data will be overwritten.")
-        user_key = input("Press Q to quit")
+        user_key = input("Press Q to quit\n")
         if user_key.lower() == "q":
             add_loop = False
+        else:
+            print(f"Task name is '{user_key}'")
 
-        print(f"Task name is '{user_key}'")
+            user_value = input("Type the task\n")
 
-        user_value = input("Type the task\n")
-
-        try:
-            t_list[user_key] = user_value
-            print(f"Added task!",
-                  {t_list[user_key]})
-            add_loop = False
-        except ValueError as e:
-            print(f"Value error: {e}")
-        except SyntaxError as e:
-            print(f"Syntax error: {e}")
-        except KeyError as e:
-            print(f"Key error: {e}")
-        except Exception as e:
-            print(f"Unknown error. Details: {e}")
-    return t_list
+            try:
+                t_list[user_key] = user_value
+                print(f"Added task!",
+                        {t_list[user_key]})
+                add_loop = False
+            except KeyError as e:
+                print(f"Key error: {e}")
+            except Exception as e:
+                print(f"Unknown error. Details: {e}")
+        return t_list
 
 def remove_from_list(t_list):
     """Handle instances of the user removing from the list"""
 
     removal_loop = True
     while removal_loop:
-        print(t_list, "Enter the key of the item would you like to remove.",
-            "Enter Q to end")
+        view_list(t_list)
+        print("Enter the key of the item would you like to remove.",
+            "Enter Q to end\n")
 
         removal_input = input()
 
@@ -74,27 +72,36 @@ def remove_from_list(t_list):
             try:
                 del t_list[removal_input]
                 return t_list
-            except ValueError as e:
-                print(f"Value error: {e}")
-            except SyntaxError as e:
-                print(f"Syntax error: {e}")
             except KeyError as e:
                 print(f"Key error: {e}")
             except Exception:
-                print(f"Unknown error. Details: {e}")  
+                print(f"Unknown error. Details: {e}")
+def view_list(t_list, massprint=True):
+    """Handle Viewing the Task List"""
+
+    if massprint:
+        for item in t_list:
+            print(f"{item}: {t_list[item]}")
+    else:
+        print("massprint disabled. Press enter to view each task")
+        for item in t_list:
+            print(f"{item}: {t_list[item]}")
+            input()
 
 def cli(task_list):
-    """The Commandline Instance of the Task List"""
+    """The Command line instance of the Task List"""
 
     cli_loop = True
-    print("Test Version")
+    version = "Test Version rel 1.\nPRIVATE ACCESS"
+    
+    print(version)
 
     while cli_loop:
         print("Select an operation to do to the task list")
         cli_choice = input("(V)iew | (A)dd | (R)emove | (S)ave | (L)oad | (Q)uit\n")
 
         if cli_choice.lower() == "v":
-            print(task_list)
+            view_list(task_list)
         elif cli_choice.lower() == "a":
             task_list = add_to_list(task_list)
         elif cli_choice.lower() == "r":
