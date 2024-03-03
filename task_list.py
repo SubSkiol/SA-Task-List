@@ -92,7 +92,7 @@ def cli(task_list):
     """The Command line instance of the Task List"""
 
     cli_loop = True
-    version = "Test Version rel 1.\nPRIVATE ACCESS"
+    version = "Test Version rel 2.\nPRIVATE ACCESS"
     
     print(version)
 
