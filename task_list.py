@@ -3,14 +3,14 @@ This base should be used for both CLI and GUI varients of the Task List."""
 import json
 from colorama import Fore, Back, Style, init
 
-# Start json section 
+# Start json section
 def load_json():
     """Load data from the JSON file."""
 
     try:
         with open("list_data.json", "r", encoding="utf-8") as json_file:
             data = json.load(json_file)
-            print(f"Loaded Data")
+            print("Loaded Data")
         return data
     except FileNotFoundError:
         print(f"{Fore.BLACK}{Back.YELLOW}No existing data file found.{Style.RESET_ALL}")
@@ -28,7 +28,7 @@ def save_json(data):
     if save_confirmation == "y" or "": # Yes is the default option
         with open("list_data.json", "w", encoding="utf-8") as json_file:
             json.dump(data, json_file, indent=2)
-        print(f"Saved Data")
+        print("Saved Data")
         input()
 
 
@@ -101,8 +101,8 @@ def cli(task_list):
     """The Command line instance of the Task List"""
 
     cli_loop = True
-    version = "Test Version rel 3.\nPRIVATE ACCESS"
-    
+    version = "SubAlternate's Task List\nVersion 1.0.0"
+
     print(Fore.YELLOW + version)
 
     while cli_loop:
@@ -123,18 +123,15 @@ def cli(task_list):
         elif cli_choice.lower() == "q":
             cli_loop = False
         else:
-            print(f"{Back.YELLOW}{Fore.BLACK}'{cli_choice}' is not a valid input{Style.RESET_ALL}")
-        
+            print(f"{Back.YELLOW}{Fore.BLACK}'{cli_choice}' is not a valid input{Style.RESET_ALL}")    
 
 def main():
     """Handle the Selection of GUI or CLI. 
     This shuld currently only open CLI, as GUI does not exist"""
 
     task_list = load_json()
-    cli(task_list) # TODO Once CLI, make this choose based on user settings. 
-
+    cli(task_list) # Once GUI is created, this should choose between them
 
 if __name__ == "__main__":
     init() # Initialize colorama
     main()
-
