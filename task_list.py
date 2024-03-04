@@ -1,6 +1,7 @@
 ﻿"""Load, save, and manage tasks inside of a task list.
 This base should be used for both CLI and GUI varients of the Task List."""
 import json
+from colorama import Fore, Back, Style, init
 
 # Start json section 
 def load_json():
@@ -9,23 +10,26 @@ def load_json():
     try:
         with open("list_data.json", "r", encoding="utf-8") as json_file:
             data = json.load(json_file)
-            print("Loaded Data")
+            print(f"Loaded Data")
         return data
     except FileNotFoundError:
-        print("No existing data file found.")
+        print(f"{Fore.BLACK}{Back.YELLOW}No existing data file found.{Style.RESET_ALL}")
+        input()
         return dict()
 
 def save_json(data):
     """Save current instance of the task list. 
     This should print the list then ask for confirmation before overwriting the JSON."""
 
-    print(data, "Are you sure you wish to save? This will overwrite the file.")
-    save_confirmation = input("Y/n\n").lower()
+    view_list(data)
+    print(f"{Fore.YELLOW}Are you sure you wish to save? This will overwrite the file.")
+    save_confirmation = input(f"{Fore.RED}Y/n\n{Fore.RESET}").lower()
 
-    if save_confirmation == "y" or "":
+    if save_confirmation == "y" or "": # Yes is the default option
         with open("list_data.json", "w", encoding="utf-8") as json_file:
             json.dump(data, json_file, indent=2)
-        print("Saved Data")
+        print(f"Saved Data")
+        input()
 
 
 # Start List management section
@@ -34,25 +38,26 @@ def add_to_list(t_list):
 
     add_loop = True
     while add_loop:
-        print("Enter a unique name (key) for your task",
-              "Warning: If the key already exists, data will be overwritten.")
-        user_key = input("Press Q to quit\n")
+        print(f"{Fore.YELLOW}Enter a unique name (key) for your task\n",
+              "Warning: If the key already exists, data will be overwritten")
+        user_key = input(f"{Fore.RED}Press Q to quit\n{Fore.RESET}")
         if user_key.lower() == "q":
             add_loop = False
         else:
-            print(f"Task name is '{user_key}'")
+            print(f"{Fore.YELLOW}Task name is {Fore.MAGENTA}'{user_key}'{Fore.RESET}")
 
-            user_value = input("Type the task\n")
+            user_value = input(f"{Fore.RED}Type the task\n{Fore.RESET}")
 
             try:
                 t_list[user_key] = user_value
-                print(f"Added task!",
+                print(f"{Fore.MAGENTA}Added task!{Fore.RESET}",
                         {t_list[user_key]})
                 add_loop = False
             except KeyError as e:
-                print(f"Key error: {e}")
+                print(f"{Fore.BLACK}{Back.YELLOW}Key error: {e}{Style.RESET_ALL}")
             except Exception as e:
-                print(f"Unknown error. Details: {e}")
+                print(f"{Fore.BLACK}{Back.YELLOW}Unknown error. Details: {e}{Style.RESET_ALL}")
+            input()
         return t_list
 
 def remove_from_list(t_list):
@@ -61,8 +66,8 @@ def remove_from_list(t_list):
     removal_loop = True
     while removal_loop:
         view_list(t_list)
-        print("Enter the key of the item would you like to remove.",
-            "Enter Q to end\n")
+        print(f"{Fore.YELLOW}Enter the key of the item would you like to remove",
+            f"{Fore.RED}Enter Q to end\n{Fore.RESET}")
 
         removal_input = input()
 
@@ -74,31 +79,36 @@ def remove_from_list(t_list):
                 return t_list
             except KeyError as e:
                 print(f"Key error: {e}")
+                input()
             except Exception:
                 print(f"Unknown error. Details: {e}")
+                input()
+
 def view_list(t_list, massprint=True):
     """Handle Viewing the Task List"""
 
     if massprint:
         for item in t_list:
-            print(f"{item}: {t_list[item]}")
+            print(f"{Fore.YELLOW}{item}:{Fore.MAGENTA} {t_list[item]}")
     else:
-        print("massprint disabled. Press enter to view each task")
+        print(f"{Fore.YELLOW}massprint disabled. Press enter to view each task")
         for item in t_list:
-            print(f"{item}: {t_list[item]}")
+            print(f"{Fore.RED}{item}:{Fore.MAGENTA} {t_list[item]}{Fore.RESET}")
             input()
+    input("press enter\n") # Freezes the screen until user presses enter
 
 def cli(task_list):
     """The Command line instance of the Task List"""
 
     cli_loop = True
-    version = "Test Version rel 2.\nPRIVATE ACCESS"
+    version = "Test Version rel 3.\nPRIVATE ACCESS"
     
-    print(version)
+    print(Fore.YELLOW + version)
 
     while cli_loop:
-        print("Select an operation to do to the task list")
-        cli_choice = input("(V)iew | (A)dd | (R)emove | (S)ave | (L)oad | (Q)uit\n")
+        print('\033c') # Clear the console
+        print(f"{Fore.BLUE}Select an operation to do to the task list{Fore.RED}")
+        cli_choice = input(f"(V)iew | (A)dd | (R)emove | (S)ave | (L)oad | (Q)uit\n{Fore.RESET}")
 
         if cli_choice.lower() == "v":
             view_list(task_list)
@@ -113,7 +123,7 @@ def cli(task_list):
         elif cli_choice.lower() == "q":
             cli_loop = False
         else:
-            print(f"'{cli_choice}' is not a valid input")
+            print(f"{Back.YELLOW}{Fore.BLACK}'{cli_choice}' is not a valid input{Style.RESET_ALL}")
         
 
 def main():
@@ -125,4 +135,6 @@ def main():
 
 
 if __name__ == "__main__":
+    init() # Initialize colorama
     main()
+
