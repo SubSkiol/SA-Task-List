@@ -14,7 +14,6 @@ def load_json():
         return data
     except FileNotFoundError:
         print(f"{Fore.BLACK}{Back.YELLOW}No existing data file found.{Style.RESET_ALL}")
-        input()
         return dict()
 
 def save_json(data):
@@ -29,7 +28,6 @@ def save_json(data):
         with open("list_data.json", "w", encoding="utf-8") as json_file:
             json.dump(data, json_file, indent=2)
         print("Saved Data")
-        input()
 
 
 # Start List management section
@@ -57,7 +55,6 @@ def add_to_list(t_list):
                 print(f"{Fore.BLACK}{Back.YELLOW}Key error: {e}{Style.RESET_ALL}")
             except Exception as e:
                 print(f"{Fore.BLACK}{Back.YELLOW}Unknown error. Details: {e}{Style.RESET_ALL}")
-            input()
         return t_list
 
 def remove_from_list(t_list):
@@ -79,10 +76,8 @@ def remove_from_list(t_list):
                 return t_list
             except KeyError as e:
                 print(f"Key error: {e}")
-                input()
             except Exception:
                 print(f"Unknown error. Details: {e}")
-                input()
 
 def view_list(t_list, massprint=True):
     """Handle Viewing the Task List"""
@@ -94,21 +89,48 @@ def view_list(t_list, massprint=True):
         print(f"{Fore.YELLOW}massprint disabled. Press enter to view each task")
         for item in t_list:
             print(f"{Fore.RED}{item}:{Fore.MAGENTA} {t_list[item]}{Fore.RESET}")
-            input()
-    input("press enter\n") # Freezes the screen until user presses enter
 
+def task_status(t_list):
+    """Handle adding a status to a task
+    INPROGRESS, COMPLETE, ABANDONED, Etc."""
+
+    view_list(t_list)
+
+    stat_loop = True
+    while stat_loop:
+        print(f"{Fore.YELLOW}Type the key you wish to edit")
+        stat_key_input = input("Enter Q to quit\n")
+
+        if stat_key_input.lower() == "q":
+            stat_loop = False
+        else:
+            status_input = input("Write a status\n") 
+            try:
+                t_list[stat_key_input] += f" ({status_input})"
+                return t_list
+            except KeyError as e:
+                print(f"KeyError: {e}")
+                return t_list
+            except ValueError as e:
+                print(f"ValueError: {e}")
+                return t_list
+            except Exception as e:
+                print(f"unknown exception: {e}")
+                return t_list
+
+# Start main section
 def cli(task_list):
     """The Command line instance of the Task List"""
 
     cli_loop = True
-    version = "SubAlternate's Task List\nVersion 1.0.0"
+    version = "SubAlternate's Task List\nVersion 1.1.0"
 
     print(Fore.YELLOW + version)
 
     while cli_loop:
-        print('\033c') # Clear the console
-        print(f"{Fore.BLUE}Select an operation to do to the task list{Fore.RED}")
-        cli_choice = input(f"(V)iew | (A)dd | (R)emove | (S)ave | (L)oad | (Q)uit\n{Fore.RESET}")
+        print(f"{Fore.BLUE}Select an operation to do to the task list{Fore.RED}\n"+
+                "(V)iew | (A)dd | (R)emove | (St)atus | (S)ave | (L)oad | (Q)uit | Clear")
+        cli_choice = input(f"{Fore.RESET}")
 
         if cli_choice.lower() == "v":
             view_list(task_list)
@@ -116,12 +138,18 @@ def cli(task_list):
             task_list = add_to_list(task_list)
         elif cli_choice.lower() == "r":
             task_list = remove_from_list(task_list)
+        elif cli_choice.lower() == "st":
+            task_list = task_status(task_list)
         elif cli_choice.lower() == "s":
             save_json(task_list)
         elif cli_choice.lower() == "l":
             task_list = load_json()
         elif cli_choice.lower() == "q":
             cli_loop = False
+        elif cli_choice.lower() == "debug": # Hidden function
+            print(task_list)
+        elif cli_choice.lower() == "clear":
+            print('\033c') # Clear the console
         else:
             print(f"{Back.YELLOW}{Fore.BLACK}'{cli_choice}' is not a valid input{Style.RESET_ALL}")    
 
@@ -135,3 +163,4 @@ def main():
 if __name__ == "__main__":
     init() # Initialize colorama
     main()
+
